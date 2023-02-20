@@ -1,1 +1,8 @@
 @use "./base";
+// components
+@use "./components/Header.scss";
+@use "./components/HeaderAside.scss";
+@use "./components/OAuth.scss";
+
+// pages
+@use "./pages//SignIn.scss";
