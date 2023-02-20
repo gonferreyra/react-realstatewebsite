@@ -1,8 +1,11 @@
+import Context from "./context/Context";
+import RouterApp from "./router/RouterApp";
+
 function App() {
   return (
-    <div className="App">
-      <h1>Vite</h1>
-    </div>
+    <Context>
+      <RouterApp />
+    </Context>
   );
 }
 
