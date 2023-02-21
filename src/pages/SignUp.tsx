@@ -1,13 +1,22 @@
 import React, { useState } from "react";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { auth, db } from "../firebase.config";
 import useForm from "../hooks/useForm";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 interface ISignupData {
   name: string;
   email: string;
-  password: string;
+  password?: string;
+  timestamp?: any;
 }
 
 function SignUp() {
@@ -19,6 +28,37 @@ function SignUp() {
   });
 
   const { name, email, password } = formData;
+  const navigate = useNavigate();
+
+  const formSubmit = async (e: any) => {
+    e.preventDefault();
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password!
+      );
+      // modificamos el profile para que los datos del name vayan al userName
+      updateProfile(userCredential.user, {
+        displayName: name,
+      });
+      const user = userCredential.user;
+      // delete password
+      // "The operand of a 'delete' operator must be optional"? fix, option on interface and "!" on the userCredential. Hacemos el delete para que no se guarde el password en firestone DB
+      const formDataCopy = { ...formData };
+      delete formDataCopy.password;
+      // Timestamp para ver la fecha en que se creo el usuario
+      formDataCopy.timestamp = serverTimestamp();
+
+      // Save the data to firestone DB.
+      await setDoc(doc(db, "users", user.uid), formDataCopy);
+
+      toast.success("Sign up was successful");
+      navigate("/");
+    } catch (error) {
+      toast.error("Something went wrong with the registration");
+    }
+  };
 
   return (
     <section className="signin__section">
@@ -31,7 +71,7 @@ function SignUp() {
           />
         </div>
         <div className="content__form">
-          <form>
+          <form onSubmit={formSubmit}>
             <input
               type="text"
               name="name"
@@ -70,7 +110,7 @@ function SignUp() {
               </p>
             </div>
             <button className="submit__btn" type="submit">
-              Sign In
+              Sign Up
             </button>
             <div className="content__or">
               <span></span>
