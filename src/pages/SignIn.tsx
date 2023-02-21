@@ -2,8 +2,10 @@ import React, { ChangeEvent } from "react";
 import { useState } from "react";
 import useForm from "../hooks/useForm";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { toast } from "react-toastify";
 
 interface ISignipData {
   email: string;
@@ -18,6 +20,26 @@ function SignIn() {
   });
 
   const { email, password } = formData;
+
+  const navigate = useNavigate();
+
+  const signInWithEmailandPassword = async (e: any) => {
+    e.preventDefault();
+    try {
+      const auth = getAuth();
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      if (userCredential.user) {
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error("User or Email incorrect. Please try again");
+      console.log(error);
+    }
+  };
 
   return (
     <section className="signin__section">
@@ -63,7 +85,11 @@ function SignIn() {
                 <Link to="/forgot-password">Forgot password?</Link>
               </p>
             </div>
-            <button className="submit__btn" type="submit">
+            <button
+              className="submit__btn"
+              type="submit"
+              onClick={signInWithEmailandPassword}
+            >
               Sign In
             </button>
             <div className="content__or">
