@@ -1,12 +1,25 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Sling as Hamburger } from "hamburger-react";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { ContextTest, Props } from "../context/Context";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 function Header() {
+  const [pageState, setPageState] = useState<string>("Sign in");
   const location = useLocation();
   const navigate = useNavigate();
   //   console.log(location.pathname);
+
+  const auth = getAuth();
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setPageState("Profile");
+      } else {
+        setPageState("Sign In");
+      }
+    });
+  }, [auth]);
 
   const context = useContext(ContextTest);
   // console.log(context.isOpen);
@@ -45,11 +58,12 @@ function Header() {
             </li>
             <li
               className={`${
-                pathMathRoute("/sign-in") && "header__items--isActive"
+                (pathMathRoute("/sign-in") || pathMathRoute("/profile")) &&
+                "header__items--isActive"
               }`}
-              onClick={() => navigate("/sign-in")}
+              onClick={() => navigate("/profile")}
             >
-              SignIn
+              {pageState}
             </li>
           </ul>
         </div>
