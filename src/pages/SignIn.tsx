@@ -7,14 +7,14 @@ import OAuth from "../components/OAuth";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-toastify";
 
-interface ISignipData {
+interface ISignupData {
   email: string;
   password: string;
 }
 
 function SignIn() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const { formData, handleInputChange } = useForm<ISignipData>({
+  const { formData, handleInputChange } = useForm<ISignupData>({
     email: "",
     password: "",
   });
