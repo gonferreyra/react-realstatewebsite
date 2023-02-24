@@ -1,9 +1,10 @@
 @use "./base";
 // components
-@use "./components/Header.scss";
-@use "./components/HeaderAside.scss";
-@use "./components/OAuth.scss";
+@use "./components/_Header.scss";
+@use "./components/_HeaderAside.scss";
+@use "./components/_OAuth.scss";
+@use "./components//Spinner";
 
 // pages
-@use "./pages/SignIn.scss";
-@use "./pages/Profile.scss";
+@use "./pages/_SignIn.scss";
+@use "./pages/_Profile.scss";
