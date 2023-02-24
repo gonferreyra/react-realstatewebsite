@@ -3,13 +3,8 @@ import { Navigate, Outlet } from "react-router";
 import useAuthStatus from "../hooks/useAuthStatus";
 import Spinner from "./Spinner";
 
-interface IAuthStatus {
-  loggedIn: boolean;
-  checkingStatus: boolean;
-}
-
 function PrivateRoute() {
-  const { loggedIn, checkingStatus } = useAuthStatus<IAuthStatus>();
+  const { loggedIn, checkingStatus } = useAuthStatus();
 
   if (checkingStatus) {
     return <Spinner />;
