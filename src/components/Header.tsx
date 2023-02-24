@@ -43,14 +43,16 @@ function Header() {
         <div className="header__desktop">
           <ul className="header__items">
             <li
-              className={`${pathMathRoute("/") && "header__items--isActive"}`}
+              className={`${
+                pathMathRoute("/") ? "header__items--isActive" : ""
+              }`}
               onClick={() => navigate("/")}
             >
               Home
             </li>
             <li
               className={`${
-                pathMathRoute("/offers") && "header__items--isActive"
+                pathMathRoute("/offers") ? "header__items--isActive" : ""
               }`}
               onClick={() => navigate("/offers")}
             >
@@ -58,8 +60,9 @@ function Header() {
             </li>
             <li
               className={`${
-                (pathMathRoute("/sign-in") || pathMathRoute("/profile")) &&
-                "header__items--isActive"
+                pathMathRoute("/sign-in") || pathMathRoute("/profile")
+                  ? "header__items--isActive"
+                  : ""
               }`}
               onClick={() => navigate("/profile")}
             >
