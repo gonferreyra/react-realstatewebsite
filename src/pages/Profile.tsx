@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import useForm from "../hooks/useForm";
-import { getAuth } from "firebase/auth";
+import { getAuth, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase.config";
 
 interface IFormData {
   name: string;
@@ -11,6 +14,7 @@ interface IFormData {
 function Profile() {
   const navigate = useNavigate();
   const auth = getAuth();
+  const [changeDetail, setChangedDetail] = useState<boolean>(false);
   const { formData, handleInputChange } = useForm<IFormData>({
     name: auth.currentUser?.displayName!,
     email: auth.currentUser?.email!,
@@ -23,6 +27,28 @@ function Profile() {
     navigate("/");
   };
 
+  const onSubmit = async () => {
+    try {
+      if (auth.currentUser !== null) {
+        if (auth.currentUser?.displayName !== name) {
+          // update displayName in firebase auth
+          await updateProfile(auth.currentUser, {
+            displayName: name,
+          });
+
+          // update name in firestone
+          const docRef = doc(db, "users", auth.currentUser.uid);
+          await updateDoc(docRef, {
+            name: name,
+          });
+        }
+        toast.success("Profile datails update");
+      }
+    } catch (error) {
+      toast.error("Could not update the profile details");
+    }
+  };
+
   return (
     <>
       <section className="profile__section">
@@ -30,11 +56,14 @@ function Profile() {
         <div className="profile__form__container">
           <form>
             <input
+              style={{
+                background: changeDetail ? "rgb(254 202 202)" : "inherit",
+              }}
               type="text"
               name="name"
               value={name}
               onChange={(e) => handleInputChange(e)}
-              disabled
+              disabled={!changeDetail}
             />
             <input
               type="email"
@@ -46,7 +75,14 @@ function Profile() {
             <div className="profile__changename">
               <p className="profile__paragraph1">
                 Do you want to change your name?
-                <span>Edit</span>
+                <span
+                  onClick={() => {
+                    changeDetail && onSubmit();
+                    setChangedDetail((prevState) => !prevState);
+                  }}
+                >
+                  {changeDetail ? "Apply change" : "Edit"}
+                </span>
               </p>
               <p className="profile__paragraph2" onClick={onLogout}>
                 Sign out
