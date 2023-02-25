@@ -5,6 +5,8 @@ import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase.config";
+import { FcHome } from "react-icons/fc";
+import { Link } from "react-router-dom";
 
 interface IFormData {
   name: string;
@@ -89,6 +91,12 @@ function Profile() {
               </p>
             </div>
           </form>
+          <button className="sell__btn" type="submit">
+            <Link to="/create-listing">
+              <FcHome />
+              Sell or rent your home
+            </Link>
+          </button>
         </div>
       </section>
     </>
