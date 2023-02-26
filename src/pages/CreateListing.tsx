@@ -1,5 +1,4 @@
 import { useState } from "react";
-import useForm from "../hooks/useForm";
 
 interface ICreateListing {
   type: string;
@@ -13,10 +12,13 @@ interface ICreateListing {
   offer: boolean;
   price: number;
   discountedPrice: number;
+  latitude: number;
+  longitud: number;
 }
 
 function CreateListing() {
-  const { formData, handleInputChange } = useForm<ICreateListing>({
+  const [geolocationEnabled, setGeolocationEnabled] = useState<boolean>(false);
+  const [formData, setFormData] = useState<ICreateListing>({
     type: "rent",
     name: "",
     bedrooms: 1,
@@ -28,6 +30,8 @@ function CreateListing() {
     offer: false,
     price: 0,
     discountedPrice: 0,
+    latitude: 0,
+    longitud: 0,
   });
 
   const {
@@ -42,9 +46,37 @@ function CreateListing() {
     offer,
     price,
     discountedPrice,
+    latitude,
+    longitud,
   } = formData;
 
-  const onChange = () => {};
+  const onChange = (event: any) => {
+    let boolean: boolean;
+    if (event.target.value === "true") {
+      boolean = true;
+    }
+    if (event.target.value === "false") {
+      boolean = false;
+    }
+    // Files
+    if (event.target.files) {
+      setFormData((prevState) => {
+        return {
+          ...prevState,
+          images: event.target.files,
+        };
+      });
+    }
+    // Text or boolean
+    if (!event.target.files) {
+      setFormData((prevState) => {
+        return {
+          ...prevState,
+          [event.target.name]: boolean ?? event.target.value,
+        };
+      });
+    }
+  };
 
   return (
     <main className="main">
@@ -109,7 +141,7 @@ function CreateListing() {
             <input
               type="number"
               id="bathrooms"
-              name="bedrooms"
+              name="bathrooms"
               value={bathrooms}
               onChange={onChange}
               min="1"
@@ -182,6 +214,28 @@ function CreateListing() {
           required
           onChange={onChange}
         />
+        {!geolocationEnabled && (
+          <div>
+            <div className="">
+              <p>Latitude</p>
+              <input
+                type="number"
+                name="latitude"
+                value={latitude}
+                required
+                onChange={onChange}
+              />
+            </div>
+          </div>
+        )}
+        <p
+          className="name"
+          style={{
+            marginTop: "0",
+          }}
+        >
+          Description
+        </p>
         <textarea
           className="main__input__name"
           id="description"
